@@ -1,0 +1,55 @@
+package com.vitor.desafio.service;
+
+import java.util.List;
+
+import org.apache.commons.csv.CSVRecord;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.vitor.desafio.model.Cidade;
+import com.vitor.desafio.repository.CidadeRepo;
+import com.vitor.desafio.tools.csv.CSVClassExtract;
+import com.vitor.desafio.tools.csv.CSVFile;
+
+
+@Service
+public class CidadeService implements CSVClassExtract<Cidade> {
+	
+	@Autowired
+	private CidadeRepo repo;
+	
+	public List<Cidade> salvarArquivoCsv( MultipartFile file) {
+		
+		if(!CSVFile.isACsvFile(file)) {
+			//TODO trata o erro de quando não é um arquivo CSV
+		}		
+		//TODO Continua o processamento
+		CSVFile<Cidade> csvF = new CSVFile<Cidade>(file);
+		List<Cidade> cidades = csvF.extract(new CidadeService());
+		for(Cidade c : cidades) {
+			repo.save(c);
+		}
+		return null;
+	}
+
+	@Override
+	public Cidade extractClass(CSVRecord csvRecord) {
+		
+		// TODO tratar erro de quantidade errada
+		Cidade c = new Cidade();
+		
+		//TODO tratar erro de int
+		c.setIdIbge(Integer.parseInt(csvRecord.get("ibge_id")));
+		c.setCidade(csvRecord.get("name"));
+		c.setEstado(csvRecord.get("uf"));
+		c.setLongitude(Double.parseDouble(csvRecord.get("lon")));
+		c.setLatitude(Double.parseDouble(csvRecord.get("lat")));
+		c.setSemAcento(csvRecord.get("no_accents"));
+		c.setNomeAlternativo(csvRecord.get("alternative_names"));
+		c.setMicroRegiao(csvRecord.get("microregion"));
+		c.setMesoRegiao(csvRecord.get("mesoregion"));		
+		return c;
+	}
+
+}
