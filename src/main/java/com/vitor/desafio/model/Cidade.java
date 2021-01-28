@@ -1,24 +1,32 @@
 package com.vitor.desafio.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.CollectionId;
 import org.hibernate.annotations.SQLInsert;
 
 import com.sun.istack.NotNull;
 
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(name = "cidade_estado", columnNames = { "cidade", "estado" }),
+		@UniqueConstraint(name = "localizacao", columnNames = { "longitude", "latitude" }) })
 public class Cidade {
 
 	@Id
 	private int idIbge;
-	
+
 	@NotNull
 	private String estado;
-	
+
 	@NotNull
 	private String cidade;
-	private String capital;
+
+	@Column(columnDefinition = " boolean default false")
+	private Boolean capital;
 	private double longitude;
 	private double latitude;
 	private String semAcento;
@@ -30,7 +38,7 @@ public class Cidade {
 		super();
 	}
 
-	public Cidade(int idIbge, String estado, String cidade, String capital, double longitude, double latitude,
+	public Cidade(int idIbge, String estado, String cidade, Boolean capital, double longitude, double latitude,
 			String semAcento, String nomeAlternativo, String microRegiao, String mesoRegiao) {
 		super();
 		this.idIbge = idIbge;
@@ -117,11 +125,11 @@ public class Cidade {
 		this.mesoRegiao = mesoRegiao;
 	}
 
-	public String getCapital() {
+	public Boolean getCapital() {
 		return capital;
 	}
 
-	public void setCapital(String capital) {
+	public void setCapital(Boolean capital) {
 		this.capital = capital;
 	}
 
