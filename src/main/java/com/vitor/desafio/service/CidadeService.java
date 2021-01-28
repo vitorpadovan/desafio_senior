@@ -1,6 +1,7 @@
 package com.vitor.desafio.service;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,13 +68,24 @@ public class CidadeService implements CSVClassExtract<Cidade> {
 	}
 	
 	public ResponseEntity<List<Cidade>> listaCapitais(){
-
-		Optional<List<Cidade>> optCapitais = repo.getCapitais();
-		if(optCapitais.isPresent())
+		Optional<List<Cidade>> optCidades = repo.getCapitais();
+		if(optCidades.isPresent())
 		{
-			return ResponseEntity.status(HttpStatus.OK).body(optCapitais.get());
+			return ResponseEntity.status(HttpStatus.OK).body(optCidades.get());
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
+	
+	public ResponseEntity<List<Cidade>> cidadesDistantes(){
+		Optional<List<Cidade>> optCidades = repo.getCidadeDistantes();
+		if(optCidades.isPresent())
+		{
+			optCidades.get().toString();
+			return ResponseEntity.status(HttpStatus.OK).body(optCidades.get());
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	}
+	
+	
 
 }

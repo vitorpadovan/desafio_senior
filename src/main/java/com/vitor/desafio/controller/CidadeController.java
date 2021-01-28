@@ -26,7 +26,11 @@ public class CidadeController {
 	public ResponseEntity<List<Cidade>> retornarCapitais(){
 		return servico.listaCapitais();
 	}
-
+	
+	@GetMapping("/distante")
+	public ResponseEntity<List<Cidade>> distantes(){
+		return servico.cidadesDistantes();
+	}
 	
 	@PostMapping("/upload")
 	public ResponseEntity<List<Cidade>> salvarCsv(@RequestParam("file") MultipartFile file) {
