@@ -14,7 +14,7 @@ import com.sun.istack.NotNull;
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(name = "cidade_estado", columnNames = { "cidade", "estado" }),
 		@UniqueConstraint(name = "localizacao", columnNames = { "longitude", "latitude" }) })
-public class Cidade {
+public class Cidade implements Comparable<Cidade> {
 
 	@Id
 	private int idIbge;
@@ -212,6 +212,11 @@ public class Cidade {
 				+ ", longitude=" + longitude + ", latitude=" + latitude + ", semAcento=" + semAcento
 				+ ", nomeAlternativo=" + nomeAlternativo + ", microRegiao=" + microRegiao + ", mesoRegiao=" + mesoRegiao
 				+ "]";
+	}
+
+	@Override
+	public int compareTo(Cidade o) {
+		return o.getIdIbge() - this.getIdIbge();
 	}
 
 }
