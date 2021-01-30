@@ -53,6 +53,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>one.util</groupId>
+			<artifactId>streamex</artifactId>
+			<version>0.6.5</version>
+		</dependency>
 	</dependencies>
 
 	<build>
