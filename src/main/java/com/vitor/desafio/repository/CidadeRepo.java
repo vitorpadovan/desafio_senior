@@ -5,21 +5,41 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.vitor.desafio.model.Cidade;
 
-public interface CidadeRepo extends JpaRepository<Cidade, Integer>{
-	
-	
+public interface CidadeRepo extends JpaRepository<Cidade, Integer> {
+
 	@Query("SELECT c FROM Cidade c WHERE capital = true order by cidade")
 	public Optional<List<Cidade>> getCapitais();
+
+	@Query("SELECT c FROM Cidade c WHERE " + "idIbge != :id"
+			+ " AND idIbge not in (SELECT p.cidade2 from ComparaCidade p where p.cidade1 = :id)"
+			+ " AND idIbge not in (SELECT p.cidade1 from ComparaCidade p where p.cidade2 = :id)")
+	public Optional<List<Cidade>> cidadesParaComparar(@Param("id") Integer usuario);
+
+	@Query("SELECT c FROM Cidade c WHERE estado = :estado")
+	public Optional<List<Cidade>> cidadesPorEstado(@Param("estado") String estado);
+
+	public Optional<List<Cidade>> findByEstadoContaining(String valor);
+
+	public Optional<List<Cidade>> findByCapitalContaining(String valor);
+
 	
-	
-	
-	//Existe uma opção mais eficiente, porem seria necessário criar duas views no banco manualmente, sem a intervenção do JPA
-	@Query("SELECT c, "
-			+ "sqrt((c.latitude - d.latitude)*(c.latitude - d.latitude) + (c.longitude - d.longitude)*(c.longitude - d.longitude)) as g "
-			+ "FROM Cidade c INNER JOIN Cidade d on c.idIbge != d.idIbge"
-			+ " ORDER BY sqrt((c.latitude - d.latitude)*(c.latitude - d.latitude) + (c.longitude - d.longitude)*(c.longitude - d.longitude)) DESC")
-	public Optional<List<Cidade>> getCidadeDistantes();
+	//TODO verificar possibilidade de like com Double
+	public Optional<List<Cidade>> findByLongitude(Double parseDouble);
+
+	//TODO verificar possibilidade de like com Double
+	public Optional<List<Cidade>> findByLatitude(Double parseDouble);
+
+	public Optional<List<Cidade>> findBySemAcentoContaining(String valor);
+
+	public Optional<List<Cidade>> findByNomeAlternativoContaining(String valor);
+
+	public Optional<List<Cidade>> findByMicroRegiaoContaining(String valor);
+
+	public Optional<List<Cidade>> findByMesoRegiaoContaining(String valor);
+
+	public Optional<List<Cidade>> findByCidadeContaining(String valor);
 }
