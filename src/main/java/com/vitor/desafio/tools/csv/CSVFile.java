@@ -13,6 +13,10 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.vitor.desafio.service.exception.ArquivoInvalidoException;
+
+import net.bytebuddy.implementation.bytecode.Throw;
+
 public class CSVFile<T> {
 
 	private MultipartFile arquivo;
@@ -22,6 +26,9 @@ public class CSVFile<T> {
 	}
 
 	public static boolean isACsvFile(MultipartFile file) {
+		if(file.getContentType().compareTo("text/csv") == 0) {
+			return true;
+		}
 		return false;
 	}
 
@@ -41,12 +48,9 @@ public class CSVFile<T> {
 			return lista;
 
 		} catch (UnsupportedEncodingException e) {
-			// TODO tratar exception
-			e.printStackTrace();
+			throw new ArquivoInvalidoException("Erro de codificação do arquivo");
 		} catch (IOException e) {
-			// TODO tratar exception
-			e.printStackTrace();
+			throw new ArquivoInvalidoException("Erro de leitura no arquivo");
 		}
-		return null;
 	}
 }
