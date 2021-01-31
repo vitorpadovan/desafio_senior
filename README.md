@@ -2,9 +2,12 @@
 ## Obrigatoriedades para executar a aplicação
 1. Banco de dados Mysql
 2. Variáveis de ambientes
-	1. `DESAFIO_DATABASE_IP`. Ip onde se encontra o banco de dados
-	2. `DESAFIO_DATABASE_PORT`. Porta para acesso o bando de dados
-	3. `DESAFIO_DATABASE_NAME`. Nome do banco de dados 
+	1. `DESAFIO_USERNAME`. Usuário do banco
+	2. `DESAFIO_PASSWORD`. Usuário do banco
+	3. `DESAFIO_DATABASE_IP`. Ip onde se encontra o banco de dados
+	4. `DESAFIO_DATABASE_PORT`. Porta para acesso o bando de dados
+	5. `DESAFIO_DATABASE_NAME`. Nome do banco de dados 
+3. Banco `DESAFIO_DATABASE_NAME` deve obrigatóriamente estar criado.
 
 ## Execução da aplicação
 ### Execução via jar
