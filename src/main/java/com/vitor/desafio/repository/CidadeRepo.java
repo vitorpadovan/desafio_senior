@@ -26,11 +26,8 @@ public interface CidadeRepo extends JpaRepository<Cidade, Integer> {
 
 	public Optional<List<Cidade>> findByCapitalContaining(String valor);
 
-	
-	//TODO verificar possibilidade de like com Double
 	public Optional<List<Cidade>> findByLongitude(Double parseDouble);
 
-	//TODO verificar possibilidade de like com Double
 	public Optional<List<Cidade>> findByLatitude(Double parseDouble);
 
 	public Optional<List<Cidade>> findBySemAcentoContaining(String valor);

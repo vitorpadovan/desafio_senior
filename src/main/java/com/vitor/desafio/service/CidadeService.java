@@ -1,5 +1,6 @@
 package com.vitor.desafio.service;
 
+import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVRecord;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.resource.transaction.spi.TransactionCoordinatorOwner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +19,8 @@ import com.vitor.desafio.model.Cidade;
 import com.vitor.desafio.model.dto.DtoEstadoQtdCidade;
 import com.vitor.desafio.repository.CidadeRepo;
 import com.vitor.desafio.repository.ComparaCidadeRepo;
+import com.vitor.desafio.service.exception.ArquivoInvalidoException;
+import com.vitor.desafio.service.exception.ObjectoNaoEncontradoException;
 import com.vitor.desafio.tools.csv.CSVClassExtract;
 import com.vitor.desafio.tools.csv.CSVFile;
 
@@ -34,10 +38,13 @@ public class CidadeService implements CSVClassExtract<Cidade> {
 	@Override
 	public Cidade extractClass(CSVRecord csvRecord) {
 
-		// TODO tratar erro de quantidade errada
 		Cidade c = new Cidade();
-		// TODO tratar erro de int
-		c.setIdIbge(Integer.parseInt(csvRecord.get("ibge_id")));
+		try {
+			c.setIdIbge(Integer.parseInt(csvRecord.get("ibge_id")));
+		} catch (NumberFormatException e) {
+			throw new RuntimeException("Formato de ID do Ibge inválido");
+		}
+
 		c.setCidade(csvRecord.get("name"));
 		c.setEstado(csvRecord.get("uf"));
 		c.setCapital(csvRecord.get("capital").compareTo("true") == 0);
@@ -52,21 +59,26 @@ public class CidadeService implements CSVClassExtract<Cidade> {
 
 	public List<Cidade> uploadArquivoCsv(MultipartFile file) {
 
+		System.out.println("-1");
+		System.out.println(file.getContentType());
+		System.out.println(file.getName());
+
+		System.out.println(CSVFile.isACsvFile(file));
+		System.out.println("-2");
 		if (!CSVFile.isACsvFile(file)) {
-			// TODO trata o erro de quando não é um arquivo CSV
+			throw new ArquivoInvalidoException("O arquivo enviado não é válido");
 		}
-		// TODO Continua o processamento
 		CSVFile<Cidade> csvF = new CSVFile<Cidade>(file);
 		List<Cidade> cidades = csvF.extract(new CidadeService());
 		for (Cidade c : cidades) {
 			try {
 				repo.save(c);
 			} catch (ConstraintViolationException ex) {
-				// TODO verificar qual erro entra aqui
+				System.out.println("1");
 			} catch (org.springframework.dao.DataIntegrityViolationException ex) {
-				// TODO tratar erro de valores duplicados
+				System.out.println("2");
 			} catch (Exception ex) {
-				// TODO tratar outros erros desconhecidos
+				System.out.println("3");
 			}
 		}
 		return cidades;
@@ -133,20 +145,21 @@ public class CidadeService implements CSVClassExtract<Cidade> {
 		if (optCidades.isPresent()) {
 			return optCidades.get();
 		} else {
-			return null;
+			throw new ObjectoNaoEncontradoException("Não foi possível encontrar o estado " + estado);
 		}
 	}
 
-	// TODO verificar se existe melhores práticas para salvar o arquivo
-	// TODO adicionar tratamento de erro para cidades com nomes diplicados
 	public Cidade salvar(Cidade cidade) {
+		if (repo.findById(cidade.getIdIbge()).isPresent()) {
+			throw new ObjectoNaoEncontradoException("Cidade com o código " + cidade.getIdIbge() + " já existe");
+		}
 		return repo.save(cidade);
 	}
 
 	public Boolean deletar(Integer idIbge) {
 		repo.deleteById(idIbge);
 		if (repo.findById(idIbge).isPresent()) {
-			return false;
+			throw new ObjectoNaoEncontradoException("Não encontramos o item para deletar");
 		}
 		return true;
 	}
@@ -192,7 +205,7 @@ public class CidadeService implements CSVClassExtract<Cidade> {
 			optCidades = repo.findByMesoRegiaoContaining(valor);
 			break;
 		default:
-			return null;
+			throw new RuntimeException("Opção de coluna inexistente");
 		}
 		if (optCidades != null && optCidades.isPresent()) {
 			return optCidades.get();
@@ -235,6 +248,8 @@ public class CidadeService implements CSVClassExtract<Cidade> {
 		case "mesoregion":
 			resultado = groupBy.distinct(c -> c.getMesoRegiao()).toList();
 			break;
+		default:
+			throw new RuntimeException("Opção de coluna inexistente");
 		}
 		return resultado.size();
 	}

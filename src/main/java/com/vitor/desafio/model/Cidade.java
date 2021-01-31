@@ -6,32 +6,49 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.CollectionId;
-import org.hibernate.annotations.SQLInsert;
-
 import com.sun.istack.NotNull;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(name = "cidade_estado", columnNames = { "cidade", "estado" }),
 		@UniqueConstraint(name = "localizacao", columnNames = { "longitude", "latitude" }) })
+@ApiModel(value="Cidade", description="representa uma cidade")
 public class Cidade implements Comparable<Cidade> {
 
 	@Id
+	@ApiModelProperty(value = "Id Ibge")
 	private int idIbge;
 
 	@NotNull
+	@ApiModelProperty(value = "Estado da cidade")
 	private String estado;
 
 	@NotNull
+	@ApiModelProperty(value = "Nome da cidade")
 	private String cidade;
 
 	@Column(columnDefinition = " boolean default false")
+	@ApiModelProperty(value = "Campo para marcar se a cidade é ou não uma capital")
 	private Boolean capital;
+
+	@ApiModelProperty(value = "Longitude da cidade")
 	private double longitude;
+
+	@ApiModelProperty(value = "Latitude da cidade")
 	private double latitude;
+
+	@ApiModelProperty(value = "Nome da cidade sem acento")
 	private String semAcento;
+
+	@ApiModelProperty(value = "Nome alternativo da cidade")
 	private String nomeAlternativo;
+
+	@ApiModelProperty(value = "Micro Região")
 	private String microRegiao;
+
+	@ApiModelProperty(value = "Meso Região")
 	private String mesoRegiao;
 
 	public Cidade() {

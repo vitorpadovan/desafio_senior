@@ -14,6 +14,10 @@ import com.vitor.desafio.model.Cidade;
 import com.vitor.desafio.model.dto.DtoEstadoQtdCidade;
 import com.vitor.desafio.service.CidadeService;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping("/estado")
 public class EstadoController {
@@ -22,6 +26,9 @@ public class EstadoController {
 	private CidadeService servico;
 
 	@GetMapping("/maiormenor")
+	@ApiOperation(value = "Retorna maior e menor cidade", notes = "Retorna o maior e menor estado existente", response = ResponseEntity.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Retorna os dois estados com maior e menor cidades"),
+			@ApiResponse(code = 400, message = "Problemas durante o processamento") })
 	public ResponseEntity<List<DtoEstadoQtdCidade>> retornarMaiorMenorEstado() {
 		try {
 			return ResponseEntity.status(HttpStatus.OK).body(servico.maiorMenorEstados());
@@ -31,12 +38,11 @@ public class EstadoController {
 	}
 
 	@GetMapping("/{estado}")
+	@ApiOperation(value = "Retorna cidades por estado", notes = "Retorna todas as cidades por estado", response = ResponseEntity.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Retorna todas as cidades do estado escolhido"),
+			@ApiResponse(code = 404, message = "Não foi encontrado o estado selecionado") })
 	public ResponseEntity<List<Cidade>> retornarCidadesPorEstado(@PathVariable String estado) {
 		List<Cidade> cidades = servico.getCidadePorEstado(estado);
-		if (cidades != null && cidades.size() >0) {
-			return ResponseEntity.status(HttpStatus.OK).body(cidades);
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
+		return ResponseEntity.status(HttpStatus.OK).body(cidades);
 	}
 }
